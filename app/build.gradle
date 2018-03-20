@@ -1,0 +1,90 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "pe.gob.onpe.onpedatosabiertos"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            useProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+        }
+
+        release {
+            minifyEnabled true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+        }
+    }
+
+
+    flavorDimensions "default"
+
+
+    productFlavors {
+        mock {
+            applicationIdSuffix = ".mock"
+            dimension "default"
+            buildConfigField 'String', 'BASE','"..."'
+        }
+        prod {
+            dimension "default"
+            buildConfigField 'String', 'BASE','"..."'
+        }
+    }
+
+
+    android.variantFilter { variant ->
+        if (variant.buildType.name == 'release'
+                && variant.flavors[0].name == 'mock') {
+            variant.ignore = true
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation supportDesignLibraries.appcompat
+    compile supportDesignLibraries.recyclerView
+    compile supportDesignLibraries.design
+    compile supportDesignLibraries.cardview
+    compile supportDesignLibraries.supportv4
+
+    kapt "android.arch.persistence.room:compiler:$rootProject.roomVersion"
+    compile "com.google.guava:guava:$rootProject.guavaVersion"
+
+
+    compile coreProject.retrofit
+    compile coreProject.moshi
+    compile coreProject.interceptor
+
+    implementation imagesLoader.glide
+    kapt imagesLoader.glideCompiler
+
+
+
+    androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-contrib:$rootProject.espressoVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.espressoVersion"
+    compile "com.google.code.findbugs:jsr305:3.0.2"
+
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+
+
+
+}
